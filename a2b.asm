@@ -1,5 +1,10 @@
 a2b			START 		0
                                         . setup: copies input to src
+            CLEAR       A
+            STA         srcIdx
+            STA         ruleIdx
+            STA         segmentLen
+            STA         count
             JSUB		cpyInputToStr	. copies input to src
 compSrcLen	LDA			srcIdx			. loads srcIdx to register A					| while (srcIdx < srcLen && ruleIdx < ruleLen) {
             LDS			srcLen			. loads srcLen to register S
@@ -13,11 +18,13 @@ compRuleLen	LDA			ruleIdx			. loads ruleIdx to register A
             JLT			loopInner		. if ruleIdx < ruleLen, jumps to loopInner
             J 			terminate		. otherwise, jumps to terminate
 loopInner	JSUB		isSameChar		. compare src[srcIdx] and rule[ruleIdx]
-            JEQ			skipRule		. if src[srcIdx] == rule[ruleIdx], 				|     if (src[srcIdx] == rule[ruleIdx]) {
-                                        . then skip current rule
-            LDA			srcIdx			. loads srcIdx to register A					|         srcIdx++;
+            JEQ			increaseIdx		. if src[srcIdx] == rule[ruleIdx], 				|     if (src[srcIdx] == rule[ruleIdx]) {
+                                        . then jumps to increaseIdx
+            J           skipRule        . otherwise, skips current rule by jumping to
+                                        . skipRule
+increaseIdx LDA			srcIdx			. loads srcIdx to register A					|         srcIdx++;
             ADD			#1				. adds 1 to register A
-            STA			srcIdx			. stores register A to srcIdx
+            STA			srcIdx	    	. stores register A to srcIdx
             LDA			segmentLen		. loads segmentLen to register A				|         segmentLen++;
             ADD			#1				. adds 1 to register A
             STA			segmentLen		. stores register A to segmentLen
@@ -26,7 +33,7 @@ loopInner	JSUB		isSameChar		. compare src[srcIdx] and rule[ruleIdx]
             STA			ruleIdx			. stores register A to ruleIdx
             LDX			ruleIdx			. loads ruleIdx to register X					|         if (rule[ruleIdx] == '=') {
             LDCH		rule, X			. loads rule[ruleIdx] to register A
-            STS			#61				. loads '=' to register S
+            LDS			equal		    . loads '=' to register S
             COMPR		A, S			. compares rule[ruleIdx] with '='
             JEQ			applyRule		. if rule[ruleIdx] == '=',
                                         . then apply the replacement to original pattern
@@ -80,12 +87,12 @@ skipUntilSemicolon						.												|         while (ruleIdx < ruleLen && rule[
             LDA			ruleIdx			. loads ruleIdx to register A
             LDS			ruleLen			. loads ruleLen to register S
             COMPR		A, S			. compares ruleIdx with ruleLen
-            JLT			skipUntilSemicolonInc		
-                                        . if ruleIdx < ruleLen, jumps to 
-                                        . skipUntilSemicolonInc
+            JEQ			skipUntilSemicolonEnd
+                                        . if ruleIdx >= ruleLen, jumps to 
+                                        . skipUntilSemicolonEnd
             LDX			ruleIdx			. loads ruleIdx to register X
             LDCH		rule, X			. loads rule[ruleIdx] to register A
-            LDS			#59				. loads ';' to register S
+            LDS			semicolon		. loads ';' to register S
             COMPR		A, S			. compares rule[ruleIdx] with ';'
             JEQ			skipUntilSemicolonEnd
                                         . if rule[ruleIdx] == ';', jumps to
@@ -146,35 +153,38 @@ isSameChar	LDX			srcIdx			. loads srcIdx to register X
             LDCH		rule, X			. loads rule[ruleIdx] to register X
             COMPR		A, S			. compares src[srcIdx] and rule[ruleIdx]
             JEQ			isSameCharL0	. if comparison is 0, jumps to isSameCharL0
-            LDA			#1				. otherwise, then loads 1 to register A
+            LDA			#0				. otherwise, then loads 1 to register A
             RSUB						. returns to parent process
 isSameCharL0
-            LDA			#0				. loads 1 to register A
+            LDA			#1				. loads 1 to register A
             RSUB						. returns to parent process
 . end of Function isSameChar
 
 . Function cpyInputToStr: Copies input string to src
 cpyInputToStr
+            LDT         #3
             CLEAR		X				. clear register X to 0
 cpyMov		LDCH		input, X		. loads input[X] to register A
             STCH		src, X			. stores register A to src[X]
-            TIX			srcLen			. increase register X by 1 and compares with srcLen
+            TIXR		T			    . increase register X by 1 and compares with srcLen
             JLT			cpyMov
             RSUB						. returns to parent process
 
 . constants    
 stdout      BYTE      	X'01'
 newline     WORD      	10
+equal       WORD        61
+semicolon   WORD        59
 
 . variables
-srcIdx     	RESB      	1				. variable src's character index
-ruleIdx     RESB    	1				. variable rule's character index
-segmentLen	RESB		1				. used for matching a pattern
-count		RESB		1				. used for copying
+srcIdx     	RESW      	1				. variable src's character index
+ruleIdx     RESW    	1				. variable rule's character index
+segmentLen	RESW		1				. used for matching a pattern
+count		RESW		1				. used for copying
 input		BYTE		C'CBA'
 src       	RESB		3
-srcLen		WORD		1
+srcLen		WORD		3
 rule        BYTE    	C'CB=BC;CA=AC;BA=AB'
-ruleLen		WORD		3
+ruleLen		WORD		17
 
 exit        END         a2b
