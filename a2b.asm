@@ -1,10 +1,10 @@
 a2b			START 		0
 										. setup: copies input to src
-			CLEAR	   A
-			STA		 srcIdx
-			STA		 ruleIdx
-			STA		 segmentLen
-			STA		 count
+			CLEAR	    A
+			STA		    srcIdx
+			STA		    ruleIdx
+			STA		    segmentLen
+			STA		    count
 			JSUB		cpyInputToStr	. copies input to src
 compSrcLen	LDA			srcIdx			. loads srcIdx to register A					| while (srcIdx < srcLen && ruleIdx < ruleLen) {
 			LDS			srcLen			. loads srcLen to register S
@@ -20,7 +20,7 @@ compRuleLen	LDA			ruleIdx			. loads ruleIdx to register A
 loopInner	JSUB		isSameChar		. compare src[srcIdx] and rule[ruleIdx]
 			JEQ			increaseIdx		. if src[srcIdx] == rule[ruleIdx], 				|	 if (src[srcIdx] == rule[ruleIdx]) {
 										. then jumps to increaseIdx
-			J		   skipRule		. otherwise, skips current rule by jumping to
+			J		    skipRule		. otherwise, skips current rule by jumping to
 										. skipRule
 increaseIdx LDA			srcIdx			. loads srcIdx to register A					|		 srcIdx++;
 			ADD			#1				. adds 1 to register A
@@ -171,18 +171,18 @@ cpyMov		LDCH		input, X		. loads input[X] to register A
 			RSUB						. returns to parent process
 
 . constants	
-stdout	  BYTE	  	X'01'
-newline	 WORD	  	10
-equal	   WORD		61
+stdout	    BYTE	  	X'01'
+newline	    WORD	  	10
+equal	    WORD		61
 semicolon   WORD		59
 
 . variables
 srcIdx	 	RESW	  	1				. variable src's character index
-ruleIdx	 RESW		1				. variable rule's character index
+ruleIdx	    RESW		1				. variable rule's character index
 segmentLen	RESW		1				. used for matching a pattern
 count		RESW		1				. used for copying
 input		BYTE		C'CBA'
-src	   	RESB		3
+src	   	    RESB		3
 srcLen		WORD		3
 rule		BYTE		C'CB=BC;CA=AC;BA=AB'
 ruleLen		WORD		17
