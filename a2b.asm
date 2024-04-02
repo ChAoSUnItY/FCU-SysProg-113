@@ -75,7 +75,7 @@ replaceEnd								.												|			}
 			STA			ruleIdx			. stores register A to ruleIdx
 			CLEAR		A				. clears register A to 0						|		 segmentLen = 0;  
 			STA			segmentLen		. stores register A to segmentLen
-applyRuleEnd                                                                            |        }
+applyRuleEnd                            .                                               |        }
 			J			loopEnd			. jumps to loop's end
 skipRule								.												| 	  } else {
 			LDA			srcIdx			. loads srcIdx to register A					|		 srcIdx -= segmentLen;
@@ -101,7 +101,8 @@ skipUntilSemicolonInc
 			LDA			ruleIdx			. loads ruleIdx									|			 ruleIdx++;
 			ADD			#1				. adds 1 to register A
 			STA			ruleIdx			. stores register A to ruleIdx
-			J			skipUntilSemicolon												|		 }
+			J			skipUntilSemicolon
+										.												|		 }
 										. jumps back to skipUntilSemicolon for next
 										. iteration
 skipUntilSemicolonEnd
@@ -121,7 +122,7 @@ skipUntilSemicolonEnd
 			STA			srcIdx			. stores register A to srcIdx
 			CLEAR		A				. clears register A to 0						|			 ruleIdx = 0;
 			STA			ruleIdx			. stores register A to ruleIdx
-																						|		 }
+										.												|		 }
 skipRuleEnd J			loopEnd			. jumps to loop's end							|	 }
 loopEnd		J			compSrcLen		. jumps back to compSrcLen for next iteration	| }
 
