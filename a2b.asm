@@ -69,11 +69,11 @@ replaceStart							.												|			 while (count < segmentLen) {
 			STA			ruleIdx			. stores register A to ruleIdx
 			J 			replaceStart 	. jumps back to replaceStart for next iteration
 replaceEnd								.												|			}
-			CLEAR		A				. clears register A to 0						|		 srcIdx = 0;  
+			CLEAR		A				. clears register A to 0						|		 srcIdx = 0;
 			STA			srcIdx			. stores register A to srcIdx
-			CLEAR		A				. clears register A to 0						|		 ruleIdx = 0;  
+			CLEAR		A				. clears register A to 0						|		 ruleIdx = 0;
 			STA			ruleIdx			. stores register A to ruleIdx
-			CLEAR		A				. clears register A to 0						|		 segmentLen = 0;  
+			CLEAR		A				. clears register A to 0						|		 segmentLen = 0;
 			STA			segmentLen		. stores register A to segmentLen
 applyRuleEnd                            .                                               |        }
 			J			loopEnd			. jumps to loop's end
@@ -88,7 +88,7 @@ skipUntilSemicolon						.												|		 while (ruleIdx < ruleLen && rule[ruleId
 			LDS			ruleLen			. loads ruleLen to register S
 			COMPR		A, S			. compares ruleIdx with ruleLen
 			JEQ			skipUntilSemicolonEnd
-										. if ruleIdx >= ruleLen, jumps to 
+										. if ruleIdx >= ruleLen, jumps to
 										. skipUntilSemicolonEnd
 			LDX			ruleIdx			. loads ruleIdx to register X
 			LDCH		rule, X			. loads rule[ruleIdx] to register A
@@ -139,7 +139,7 @@ printStr	LDCH		src, X			. loads src[X] to register A
 
 . Function writeChar: Writes character from register A out to stdout
 writeChar	TD			stdout			. tests if device stdout is ready
-			JEQ			writeChar		. if device stdout is not ready, then jump 
+			JEQ			writeChar		. if device stdout is not ready, then jump
 										. to writeChar and continue waiting
 			WD			stdout			. otherwise, write character from register A
 										. to device stdout
@@ -163,7 +163,7 @@ isSameCharL0
 
 . Function cpyInputToStr: Copies input string to src
 cpyInputToStr
-			LDT		 #3
+			LDT		 	srcLen
 			CLEAR		X				. clear register X to 0
 cpyMov		LDCH		input, X		. loads input[X] to register A
 			STCH		src, X			. stores register A to src[X]
@@ -171,7 +171,7 @@ cpyMov		LDCH		input, X		. loads input[X] to register A
 			JLT			cpyMov
 			RSUB						. returns to parent process
 
-. constants	
+. constants
 stdout	    BYTE	  	X'01'
 newline	    WORD	  	10
 equal	    WORD		61
