@@ -136,6 +136,7 @@ printStr	LDCH		src, X			. loads src[X] to register A
 			LDA			newline			. loads new line character '\n'
 			JSUB		writeChar		. print out character '\n'
 			J	   	exit
+halt			J		halt
 
 . Function writeChar: Writes character from register A out to stdout
 writeChar	TD			stdout			. tests if device stdout is ready
